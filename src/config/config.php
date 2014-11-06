@@ -19,6 +19,22 @@ return [
      */
     'inputClass' => 'form-control',
 
+	/*
+	 * What class should the wrapper
+	 * element receive if error exist?
+	*/
+	'wrapperErrorClass'  => 'has-error',
+
+	/*
+	 * Inline errors?
+	 * */
+	'inlineErrors'       => true,
+
+	/*
+	 * Inline errors template?
+	 * */
+	'inlineErrorsTemplate' => '<span class="help-block">%s</span>',
+
     /**
      * Frequent input names can map
      * to their respective input types.
