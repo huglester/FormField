@@ -11,6 +11,17 @@ class FormField {
 	 */
 	protected static $instance;
 
+	protected $messages;
+
+	function __construct()
+	{
+		$bag = \Session::get('errors');
+		if ($bag)
+		{
+			$this->messages = $bag;
+		}
+	}
+
 	/**
 	 * Make the form field
 	 *
@@ -21,10 +32,21 @@ class FormField {
 	 */
 	public function make($name, array $args)
 	{
-		$wrapper = $this->createWrapper();
-		$field   = $this->createField($name, $args);
+		$wrapper       = $this->createWrapper();
+		$field         = $this->createField($name, $args);
+		$error_class   = ($this->getError($name)) ? Config::get('form::wrapperErrorClass') : null;
 
-		return str_replace('{{FIELD}}', $field, $wrapper);
+		$search = ['{{FIELD}}', '{{WRAPPER_ERROR_CLASS}}', '{{INLINE_ERRORS}}'];
+
+		$errors_inline  = null;
+		if ($error_class and Config::get('form::inlineErrors'))
+		{
+			$errors_inline = sprintf(Config::get('form::inlineErrorsTemplate'), $this->getError($name));
+		}
+
+		$replace = [$field, $error_class, $errors_inline];
+
+		return str_replace($search, $replace, $wrapper);
 	}
 
 	/**
@@ -36,7 +58,10 @@ class FormField {
 		$wrapper      = Config::get('form::wrapper');
 		$wrapperClass = Config::get('form::wrapperClass');
 
-		return '<'.$wrapper.' class="'.$wrapperClass.'">{{FIELD}}</'.$wrapper.'>';
+		return '<'.$wrapper.' class="'.$wrapperClass.' {{WRAPPER_ERROR_CLASS}}">
+		{{FIELD}}
+		{{INLINE_ERRORS}}
+		</'.$wrapper.'>';
 	}
 
 	/**
@@ -60,7 +85,7 @@ class FormField {
 
 		unset($args['label']);
 
-		return $field .= $this->createInput($type, $args, $name);
+		return $field . $this->createInput($type, $args, $name);
 	}
 
 	/**
@@ -106,7 +131,6 @@ class FormField {
 		{
 			$value = null;
 		}
-
 
 		if ($type === 'select')
 		{
@@ -188,6 +212,16 @@ class FormField {
 		if ( ! $instance) $instance = static::$instance = new static;
 
 		return $instance->make($name, $args);
+	}
+
+	private function getError($name)
+	{
+		if ( ! empty($this->messages))
+		{
+			return $this->messages->first($name);
+		}
+
+		return null;
 	}
 
 }
