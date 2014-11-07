@@ -100,13 +100,20 @@ class FormField {
 	{
 		$label = array_get($args, 'label');
 
+
 		// If no label was provided, let's check out conrigs, to see if there
 		// are some defaults
 		is_null($label) and $label = $this->checkLabelConfig($name);
 
+		// We passed the label, suffix it!
+		if ($label)
+		{
+			$label .= ':';
+		}
+
 		// If no label was provided, let's do our best to construct
 		// a label from the method name.
-		is_null($label) and $label = $this->prettifyFieldName($name).': ';
+		is_null($label) and $label = $this->prettifyFieldName($name).':';
 
 		return $label ? Form::label($name, $label, array('class' => Config::get('form::labelClass'))) : '';
 	}
