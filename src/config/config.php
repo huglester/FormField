@@ -19,6 +19,16 @@ return [
      */
     'inputClass' => 'form-control',
 
+/**
+	 * Should form inputs be wrapped in an element?
+	 */
+	'inputWrapper'      => 'div',
+
+	/**
+	 * Should form inputs receive a class name?
+	 */
+	'inputWrapperClass' => 'col-sm-4',
+
 	/*
 	 * What class should the wrapper
 	 * element receive if error exist?
