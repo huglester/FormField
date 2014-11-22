@@ -64,6 +64,21 @@ class FormField {
 		</'.$wrapper.'>';
 	}
 
+	protected function inputWrap($input)
+	{
+		$wrapper      = Config::get('form::inputWrapper');
+		$wrapperClass = Config::get('form::inputWrapperClass');
+
+		if ( ! $wrapper)
+		{
+			return $input;
+		}
+
+		return '<'.$wrapper.' class="'.$wrapperClass.'">
+		'.$input.'
+		</'.$wrapper.'>';
+	}
+
 	/**
 	 * Create the form field
 	 *
@@ -85,7 +100,13 @@ class FormField {
 
 		unset($args['label']);
 
-		return $field . $this->createInput($type, $args, $name);
+		// Catch the input field
+		$input = $this->createInput($type, $args, $name);
+
+		// Wrap input field inside wrapper, if needed
+		$input = $this->inputWrap($input);
+
+		return $field . $input;
 	}
 
 	/**
@@ -99,7 +120,6 @@ class FormField {
 	protected function createLabel($args, $name)
 	{
 		$label = array_get($args, 'label');
-
 
 		// If no label was provided, let's check out conrigs, to see if there
 		// are some defaults
@@ -161,6 +181,7 @@ class FormField {
 
 			return Form::select($name, $options, $value, $args);
 		}
+
 
 
 		return $type == 'password'
