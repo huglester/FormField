@@ -150,13 +150,16 @@ class FormField {
 	 */
 	protected function createInput($type, $args, $name)
 	{
+		$value = null;
 		if (isset($args['value']) and $type != 'password')
 		{
 			$value = $args['value'];
 			unset($args['value']);
-		} else
+		}
+		// support for default value
+		elseif (isset($args['default']))
 		{
-			$value = null;
+			$value = $args['default'];
 		}
 
 		if ($type === 'select')
@@ -181,8 +184,6 @@ class FormField {
 
 			return Form::select($name, $options, $value, $args);
 		}
-
-
 
 		return $type == 'password'
 			? Form::password($name, $args)
